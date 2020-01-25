@@ -15,8 +15,20 @@ Please document your decision and your reasons for it.
 
 
 To run Question 1:
+
 a) download subway_lines.py
+
+b) if not installed, install the below module(s) in command window as follows: pip install <module>   
+
+json
+
+urllib
+
+requests
+
 b) if not already installed, install python (version Python 3.6.5) was used for dev 
+
 c) in console, type:
+
    python subway_lines.py
 
