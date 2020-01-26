@@ -1,4 +1,4 @@
-# BROADIE_EXERCISES
+# TRANSIT_EXERCISES
 Exercises for Broad Institute 
 
 
