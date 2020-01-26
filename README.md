@@ -41,7 +41,7 @@ d) in console, type:
 
 
 
-Expected Output:
+Expected Output Question1 and Question2 first two parts:
 
 c:\py_mbta>python subway_routes.py
 
