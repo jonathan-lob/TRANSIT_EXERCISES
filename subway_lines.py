@@ -3,8 +3,13 @@ import urllib
 import requests
 
 
+class rail_api(object):
+    def __init__(self, key = "f9fed311243b4d7a94c9596d46b566cc", url = "https://api-v3.mbta.com/"):
+        self.url = url
+        self.key = key
+        self.header = {'Accept': 'application/json', 'Authorization': 'Bearer {}'.format(key)}
 
-class rail_lines(object):
+class rail_line_routes(rail_api):
     """ 
         class to hold rail line types
         chile of python default class object
@@ -12,12 +17,10 @@ class rail_lines(object):
     
     def enc_req_get(self, url):
         """get API request"""
-        key = "f9fed311243b4d7a94c9596d46b566cc"
-        headers = {'Accept': 'application/json', 'Authorization': 'Bearer {}'.format(key)}
-       
+        
         try:
             #make API request 
-            r =  requests.get(url, headers=headers)
+            r =  requests.get(url, headers=self.header)
             parsed_reponse = json.loads(r.content)
             return parsed_reponse, r.status_code
         except e as error:
@@ -28,15 +31,21 @@ class rail_lines(object):
 
     def display_get_mbta_rail_line(self, type, attr_name):
         """
-            get _light_rail [type]=0
-            get _heavy_rail [type]=1
+            inputs:
+                type:
+                    get _light_rail [type]=0
+                    get _heavy_rail [type]=1
+                attr_name(s): name of desired attribute
+            output:
+                list of attribute name(s) values       
         """
         res = []
         if type == 0:
             rail_type = "light"
         else:
             rail_type = "heavy"
-        rq = 'https://api-v3.mbta.com/routes?filter[type]=' + str(type)
+        #rq = 'https://api-v3.mbta.com/routes?filter[type]=' + str(type)
+        rq = self.url + "routes?filter[type]=" + str(type)
         data, stat = self.enc_req_get(rq)
         if stat == 200:
             ld_data = data["data"]
@@ -46,7 +55,7 @@ class rail_lines(object):
         else:
             print("An error occurred")
 
-class rail_line_stops(rail_lines):
+class rail_line_stops(rail_line_routes):
     """rail line stops, child of rail_lines"""
 
     def get_all_stops_attr(self, field_name):
@@ -54,9 +63,10 @@ class rail_line_stops(rail_lines):
         get stop attribute
         """
         res = []
-        rq = 'https://api-v3.mbta.com/stops'
+        #rq = 'https://api-v3.mbta.com/stops'
+        rq = self.url +  self.__class__.__name__.split('_')[2]
         #return requests data and status as tuple 
-        data, stat = rail_lines.enc_req_get(self, rq)
+        data, stat = super().enc_req_get(rq)
         stp_data = data["data"]
         for des in stp_data:
             res.append(des["attributes"][field_name])
@@ -72,18 +82,20 @@ class rail_line_stops(rail_lines):
         #initialize dictionary
         rail_stop_count = {}
         #get all rail lines: light and heavy
-        all_rail_lines = rail_lines.display_get_mbta_rail_line(self, 0, "long_name") + rail_lines.display_get_mbta_rail_line(self, 1, "long_name")
+        all_rail_lines = rail_line_routes.display_get_mbta_rail_line(self, 0, "long_name") + rail_line_routes.display_get_mbta_rail_line(self, 1, "long_name")
         all_stops_desc = self.get_all_stops_attr("description")
         for rail_line in all_rail_lines:
             rail_stop_count[rail_line] = 0
             for stop_desc in all_stops_desc:
                 try:
+                    #handle green line stop description
                     if 'Green Line' in rail_line:
                         green_letter = rail_line.split()[2]
                         green_mtch = rail_line.split()[0] + ' ' + rail_line.split()[1]
                         mtch_str = '- ' + green_mtch + ' - (' 
                         if '(' + green_letter + ')' in stop_desc:
                             if mtch_str in stop_desc:
+                                #increment green line stop
                                 rail_stop_count[rail_line] += 1
                     else:
                         mtch_str = '- ' + rail_line + ' -'
@@ -100,11 +112,12 @@ if __name__ == "__main__":
     post_del = '################################\n\n'
     #print out Q1 resuklt
     print("{}{}{}".format(pre_del, 'Question 1 output', post_del))
-    rl = rail_lines()
-    print("light rail lines USING FILTER method for efficiency and to minimize load on API server:\n\n")
+    rl = rail_line_routes()
+    rs_st = "rail lines USING FILTER method for efficiency and to minimize load on API server:\n\n"
+    print("light ".format(rs_st))
     for rail_line in rl.display_get_mbta_rail_line(0, "long_name"):
         print(rail_line)
-    print("\n\nheavy rail lines USING FILTER method for efficiency and to minimize load on API server:\n\n")
+    print("\n\nheavy ".format(rs_st))
     for rail_line in rl.display_get_mbta_rail_line(1, "long_name"):
         print(rail_line)
     
