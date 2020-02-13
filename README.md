@@ -76,4 +76,29 @@ min stops on a rail line:11  on the following line:Green Line E
 
 c:\py_mbta>
 
+Question 2, part 3 is in development
+Design Plan 1:
+Traverse all stops in all rail lines. Find the non-unique stop names and these are assumed to be
+"gateways" between rail lines. Store these along with associated rail lines. Print them out. 
+
+Design Plan 2:
+Similar to  Design Plan 1 but use station coordinates to determine if same stop
+
+################################Question 3 design plan ################################
+1. Retreive beginning stop and end stop from user.
+2. if both stops on a single rail line. 
+       print beginning stop, end stop and rail line
+   elif beginning stop rail line and end stop rail line have single common "gateway" as (determined in Question 2, part 3),
+           print beginning stop, end stop, rail line of beginning end stop rail line have 
+   elif no common "gateway"
+      using "gateways" find shortest path and print out associated rai lines
+      shortest path could be based off:
+         a. least number of stops between beginning stop and end stop
+         b. shortest distance of the trip using stop coordinates
+         d. shortest time of route traversalusing average time (if available)
+        
+      
+      
+   
+
 
